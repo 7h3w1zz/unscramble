@@ -3,9 +3,15 @@
 
 module UnscrambleOpts
   ( getOptions
+  , Options(..)
   ) where
 
 import Options.Applicative
+
+data Options = Options
+  { letters        :: String
+  , dictionaryFile :: FilePath
+  }
 
 getOptions :: IO Options
 getOptions = execParser optionParserInfo
@@ -26,8 +32,3 @@ optionParser = do
   -- **temporary**
   dictionaryFile <- pure "./words.txt"
   pure Options{..}
-
-data Options = Options
-  { letters        :: String
-  , dictionaryFile :: FilePath
-  }
