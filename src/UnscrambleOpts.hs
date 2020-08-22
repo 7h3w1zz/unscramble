@@ -3,32 +3,24 @@
 
 module UnscrambleOpts
   ( getOptions
-  , Options(..)
   ) where
 
 import Options.Applicative
+import Unscrambler (Input(..))
 
-data Options = Options
-  { characters     :: String
-  , dictionaryFile :: FilePath
-  , minLength      :: Int
-  , maxLength      :: Int
-  , mustContain       :: String
-  }
-
-getOptions :: IO Options
+getOptions :: IO (FilePath, Input)
 getOptions = execParser optionParserInfo
 
 mainArg = "LETTERS"
 
-optionParserInfo :: ParserInfo Options
+optionParserInfo :: ParserInfo (FilePath, Input)
 optionParserInfo = info (optionParser <**> helper)
   (  fullDesc
   <> progDesc ("Unscramble " ++ mainArg)
   <> header "unscramble - unscramble words on the command line"
   )
 
-optionParser :: Parser Options
+optionParser :: Parser (FilePath, Input)
 optionParser = do
   characters <- argument str
     (  value []
@@ -62,4 +54,4 @@ optionParser = do
     <> metavar "string"
     <> help "Characters that words must contain at least once"
     )
-  pure Options{..}
+  pure (dictionaryFile, Input{..})
