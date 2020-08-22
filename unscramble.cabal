@@ -36,6 +36,7 @@ library
 executable unscramble-exe
   main-is: Main.hs
   other-modules:
+      UnscrambleOpts
       Paths_unscramble
   hs-source-dirs:
       app
