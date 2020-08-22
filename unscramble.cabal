@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       UnscrambleOpts
+      Unscrambler
+      Validate
   other-modules:
       Paths_unscramble
   hs-source-dirs:

@@ -2,10 +2,10 @@ module Main where
 
 import UnscrambleOpts
 import Validate
+import Unscrambler
 
 main :: IO ()
-main = getOptions >>= validate >>= display . unscramble
+main = getOptions >>= validate >>= (display . (uncurry unscrambler))
 
--- **Work In Progress**
-display = putStrLn
-unscramble _ = "success"
+display :: [String] -> IO ()
+display = sequence_ . (map putStrLn)
