@@ -24,8 +24,6 @@ source-repository head
   location: https://github.com/7h3w1zz/unscramble
 
 library
-  exposed-modules:
-      Lib
   other-modules:
       Paths_unscramble
   hs-source-dirs:
