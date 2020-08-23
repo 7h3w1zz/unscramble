@@ -12,12 +12,13 @@ import Utility
 getOptions :: IO (FilePath, Input)
 getOptions = execParser optionParserInfo
 
-mainArg = "LETTERS"
+mainArg = "CHARACTERS"
+output = "WORDS"
 
 optionParserInfo :: ParserInfo (FilePath, Input)
 optionParserInfo = info (optionParser <**> helper)
   (  fullDesc
-  <> progDesc ("Unscramble " ++ mainArg)
+  <> progDesc ("Unscrambles " ++ mainArg ++ " into a list of " ++ output)
   <> header "unscramble - unscramble words on the command line"
   )
 
@@ -47,7 +48,7 @@ lengthOp = option auto
   <> value 0
   <> showDefault
   <> metavar "<int>"
-  <> help "Exact length of unscrambled words, 0 for no limit"
+  <> help ("Exact length of " ++ output  ++ ", 0 for no limit")
   )
 
 minLengthOp = option auto
@@ -56,7 +57,7 @@ minLengthOp = option auto
   <> value 0
   <> showDefault
   <> metavar "<int>"
-  <> help "Minimum length of unscrambled words"
+  <> help ("Minimum length of " ++ output)
   )
 
 maxLengthOp = option auto
@@ -65,7 +66,7 @@ maxLengthOp = option auto
   <> value 0
   <> showDefault
   <> metavar "<int>"
-  <> help "Maximum length of unscrambled words, 0 for no limit"
+  <> help ("Maximum length of " ++ output ++ ", 0 for no limit")
   )
 
 mustContainOp = option str
@@ -74,5 +75,5 @@ mustContainOp = option str
   <> value []
   <> showDefaultWith (const "<None>")
   <> metavar "<string>"
-  <> help "Characters that words must contain at least once"
+  <> help ("Characters that " ++ output ++ " must contain at least once")
   )
