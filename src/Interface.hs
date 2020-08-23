@@ -1,7 +1,7 @@
 {-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module UnscrambleOpts
+module Interface
   ( getOptions
   ) where
 

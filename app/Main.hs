@@ -1,6 +1,6 @@
 module Main where
 
-import UnscrambleOpts
+import Interface
 import Unscrambler
 
 main :: IO ()
