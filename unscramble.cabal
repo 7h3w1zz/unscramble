@@ -27,6 +27,7 @@ library
   exposed-modules:
       UnscrambleOpts
       Unscrambler
+      Utility
   other-modules:
       Paths_unscramble
   hs-source-dirs:
