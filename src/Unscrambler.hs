@@ -4,6 +4,7 @@
 module Unscrambler
   ( unscrambler
   , Input(..)
+  , inputDefault
   ) where
 
 import Data.List
@@ -14,6 +15,13 @@ data Input = Input
   , minLength   :: Int
   , maxLength   :: Int
   , mustContain :: String
+  }
+
+inputDefault = Input
+  { characters = ""
+  , minLength = 0
+  , maxLength = 0
+  , mustContain = ""
   }
 
 unscrambler :: [String] -> Input -> [String]
