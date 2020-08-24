@@ -1,41 +1,30 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module Unscrambler
   ( unscrambler
-  , Input(..)
-  , inputDefault
   ) where
 
 import Data.List
 import Data.Function
-
-data Input = Input
-  { characters  :: String
-  , minLength   :: Int
-  , maxLength   :: Int
-  , mustContain :: String
-  }
-
-inputDefault = Input
-  { characters = ""
-  , minLength = 0
-  , maxLength = 0
-  , mustContain = ""
-  }
+import Interface
 
 unscrambler :: [String] -> Input -> [String]
 unscrambler dictionary input = filter (isUnscrambled input) dictionary
 
 isUnscrambled :: Input -> String -> Bool
-isUnscrambled Input{..} = mempty
-  <> emptyIfTrue (minLength == 0) ((>= minLength) . length)
-  <> emptyIfTrue (maxLength == 0) ((<= maxLength) . length)
-  <> emptyIfTrue (characters == []) (isPermutation characters)
-  <> emptyIfTrue (mustContain == []) (flip containsOneOf mustContain)
+isUnscrambled = filterCharacters <> (filterUnlimited . unlimited)
 
-emptyIfTrue :: Monoid m => Bool -> m -> m
-emptyIfTrue b m = if b then mempty else m
+filterCharacters :: Input -> String -> Bool
+filterCharacters (Input cs u) =
+  maybe (isPermutation cs) (const $ isMadeOf $ nub cs) u
+
+filterUnlimited :: Maybe Unlimited -> String -> Bool
+filterUnlimited = maybeEmpty $
+  (filterLengths . lengths) <> (maybeEmpty (flip isMadeOf) . mustContain)
+
+filterLengths :: Either (Maybe Int, Maybe Int) (Maybe Int) -> String -> Bool
+filterLengths (Left (min, max)) = ((maybeEmpty (<=) min) <> (maybeEmpty (>=) max)) . length
+filterLengths (Right x)         = (maybeEmpty (==) x) . length
 
 isMadeOf :: Eq a => [a] -> [a] -> Bool
 isMadeOf xs = and . map (flip contains xs)
@@ -43,11 +32,11 @@ isMadeOf xs = and . map (flip contains xs)
 isPermutation :: Ord a => [a] -> [a] -> Bool
 isPermutation = (==) `on` sort
 
-containsOneOf :: Eq a => [a] -> [a] -> Bool
-containsOneOf xs = or . map (flip contains xs)
-
 contains :: Eq a => a -> [a] -> Bool
 contains x = or . map (== x)
+
+maybeEmpty :: Monoid b => (a -> b) -> Maybe a -> b
+maybeEmpty = maybe mempty
 
 instance Semigroup Bool where
   (<>) = (&&)

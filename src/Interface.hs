@@ -1,19 +1,27 @@
-{-# LANGUAGE ApplicativeDo #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Interface
   ( getOptions
+  , Input(..)
+  , Unlimited(..)
   ) where
 
 import Options.Applicative
-import Unscrambler
-import Utility
-
-getOptions :: IO (FilePath, Input)
-getOptions = execParser optionParserInfo
 
 mainArg = "CHARACTERS"
 output = "WORDS"
+
+data Input = Input
+  { characters     :: String
+  , unlimited      :: Maybe Unlimited
+  }
+
+data Unlimited = Unlimited
+  { lengths     :: Either (Maybe Int, Maybe Int) (Maybe Int)
+  , mustContain :: Maybe String
+  }
+
+getOptions :: IO (FilePath, Input)
+getOptions = execParser optionParserInfo
 
 optionParserInfo :: ParserInfo (FilePath, Input)
 optionParserInfo = info (optionParser <**> helper)
@@ -23,57 +31,65 @@ optionParserInfo = info (optionParser <**> helper)
   )
 
 optionParser :: Parser (FilePath, Input)
-optionParser = do
-  characters <- charactersOp
-  dictionaryFile <- dictionaryFileOp
-  ~(minLength, maxLength) <- lengthsOp
-  mustContain <- mustContainOp
-  pure (dictionaryFile, Input{..})
+optionParser = (,)
+  <$> dictionaryFileOp
+  <*> (Input <$> charactersOp <*> unlimitedOps)
 
+unlimitedOps :: Parser (Maybe Unlimited)
+unlimitedOps = pure Nothing <|>
+  (unlimitedOp *> (Just <$> (Unlimited <$> lengthsOp <*> mustContainOp)))
+
+unlimitedOp :: Parser ()
+unlimitedOp = flag' ()
+  (  long "unlimited"
+  <> short 'u'
+  <> help (output ++ " can contain any number " ++ mainArg)
+  )
+
+charactersOp :: Parser String
 charactersOp = argument str
-  (  value (characters inputDefault)
-  <> showDefaultWith (const "All characters")
-  <> metavar mainArg
+  (  metavar mainArg
   <> help "Characters to unscramble"
   )
 
 -- **temporary**
+dictionaryFileOp :: Parser FilePath
 dictionaryFileOp = pure "/usr/share/dict/words"
 
-lengthsOp = (dup <$> lengthOp) <|> ((,) <$> minLengthOp <*> maxLengthOp)
+lengthsOp :: Parser (Either (Maybe Int, Maybe Int) (Maybe Int))
+lengthsOp = (Right <$> lengthOp) <|> (Left <$> ((,) <$> minLengthOp <*> maxLengthOp))
 
-lengthOp = option auto
+lengthOp :: Parser (Maybe Int)
+lengthOp = option (Just <$> auto)
   (  long "length"
   <> short 'l'
-  <> value (minLength inputDefault)
-  <> showDefault
+  <> value Nothing
   <> metavar "<int>"
-  <> help ("Exact length of " ++ output  ++ ", 0 for no limit")
+  <> help ("Exact length of " ++ output)
   )
 
-minLengthOp = option auto
+minLengthOp :: Parser (Maybe Int)
+minLengthOp = option (Just <$> auto)
   (  long "min-length"
   <> short 'm'
-  <> value (minLength inputDefault)
-  <> showDefault
+  <> value Nothing
   <> metavar "<int>"
   <> help ("Minimum length of " ++ output)
   )
-
-maxLengthOp = option auto
+maxLengthOp :: Parser (Maybe Int)
+maxLengthOp = option (Just <$> auto)
   (  long "max-length"
   <> short 'M'
-  <> value (maxLength inputDefault)
-  <> showDefault
+  <> value Nothing
   <> metavar "<int>"
-  <> help ("Maximum length of " ++ output ++ ", 0 for no limit")
+  <> help ("Maximum length of " ++ output)
   )
 
-mustContainOp = option str
+mustContainOp :: Parser (Maybe String)
+mustContainOp = option (Just <$> str)
   (  long "contains"
   <> short 'c'
-  <> value []
-  <> showDefaultWith (const "<None>")
+  <> value Nothing
   <> metavar "<string>"
   <> help ("Characters that " ++ output ++ " must contain at least once")
   )
