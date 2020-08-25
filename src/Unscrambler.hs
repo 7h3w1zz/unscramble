@@ -20,7 +20,10 @@ filterCharacters (Input cs u) =
 
 filterUnlimited :: Maybe Unlimited -> String -> Bool
 filterUnlimited = maybeEmpty $
-  (filterLengths . lengths) <> (maybeEmpty (flip isMadeOf) . mustContain)
+  (filterLengths . lengths) <> (filterMustContain . mustContain)
+
+filterMustContain :: Maybe String -> String -> Bool
+filterMustContain = maybeEmpty (flip isMadeOf)
 
 filterLengths :: Either (Maybe Int, Maybe Int) (Maybe Int) -> String -> Bool
 filterLengths (Left (min, max)) = ((maybeEmpty (<=) min) <> (maybeEmpty (>=) max)) . length
