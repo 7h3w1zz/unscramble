@@ -43,7 +43,7 @@ unlimitedOp :: Parser ()
 unlimitedOp = flag' ()
   (  long "unlimited"
   <> short 'u'
-  <> help (output ++ " can contain any number " ++ mainArg)
+  <> help (output ++ " can contain any number of " ++ mainArg)
   )
 
 charactersOp :: Parser String
