@@ -52,9 +52,15 @@ charactersOp = argument str
   <> help "Characters to unscramble"
   )
 
--- **temporary**
 dictionaryFileOp :: Parser FilePath
-dictionaryFileOp = pure "/usr/share/dict/words"
+dictionaryFileOp = option str
+  (  long "dictionary-file"
+  <> short 'd'
+  <> value "/usr/share/dict/words"
+  <> showDefault
+  <> metavar "<file>"
+  <> help "Whitespace-separated word list to solve from"
+  )
 
 lengthsOp :: Parser (Either (Maybe Int, Maybe Int) (Maybe Int))
 lengthsOp = (Right <$> lengthOp) <|> (Left <$> ((,) <$> minLengthOp <*> maxLengthOp))
