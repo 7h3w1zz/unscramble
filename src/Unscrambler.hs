@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module Unscrambler
   ( unscrambler
   ) where
