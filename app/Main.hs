@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Exception
+import System.Exit
 import Interface
 import Unscrambler
 
@@ -15,7 +16,7 @@ getDictionary = fmap words . myReadFile
 
 myReadFile :: FilePath -> IO String
 myReadFile fileName = readFile fileName `onException`
-  (error $ "Could not read file: " ++ fileName)
+  (putStrLn ("Could not read file: " ++ fileName) >> exitFailure)
 
 display :: [String] -> IO ()
 display = sequence_ . (map putStrLn)
