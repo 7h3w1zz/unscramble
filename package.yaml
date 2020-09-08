@@ -27,7 +27,7 @@ library:
   source-dirs: src
 
 executables:
-  unscramble-exe:
+  unscramble:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
